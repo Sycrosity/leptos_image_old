@@ -3,9 +3,6 @@ use crate::optimizer::*;
 use leptos::{logging::debug_warn, *};
 use leptos_meta::Link;
 
-/**
- */
-
 /// Image component for rendering optimized static images.
 /// Images MUST be static. Will not work with dynamic images.
 #[component]
@@ -30,7 +27,7 @@ pub fn Image(
     #[prop(default = true)]
     lazy: bool,
     /// Image alt text.
-    #[prop(into, optional)]
+    #[prop(into)]
     alt: String,
     /// Style class for image.
     #[prop(into, optional)]
@@ -39,7 +36,7 @@ pub fn Image(
     if src.starts_with("http") {
         debug_warn!("Image component only supports static images.");
         let loading = if lazy { "lazy" } else { "eager" };
-        return view! {  <img src=src alt=alt class=class loading=loading/> }.into_view();
+        return view! { <img src=src alt=alt class=class width=width height=height loading=loading/> }.into_view();
     }
 
     let blur_image = {
@@ -108,16 +105,27 @@ pub fn Image(
                             let opt_image = opt_image.get_value();
                             let class = class.get_value();
                             let alt = alt.get_value();
-                            view! {  <CacheImage lazy svg opt_image alt class=class priority/> }
+                            view! { <CacheImage lazy svg opt_image alt class=class priority/> }
                                 .into_view()
                         })
                 }}
+
             </Suspense>
         }
     } else {
         let loading = if lazy { "lazy" } else { "eager" };
-        view! {  <img alt=alt class=class decoding="async" loading=loading src=opt_image/> }
-            .into_view()
+        view! {
+            <img
+                alt=alt
+                class=class
+                decoding="async"
+                loading=loading
+                src=opt_image
+                width=width
+                height=height
+            />
+        }
+        .into_view()
     }
 }
 
@@ -158,12 +166,11 @@ fn CacheImage(
 
     view! {
         {if priority {
-            view! {  <Link rel="preload" as_="image" href=opt_image.clone()/> }
-                .into_view()
+            view! { <Link rel="preload" as_="image" href=opt_image.clone()/> }.into_view()
         } else {
-            view! {  }
-                .into_view()
+            view! {}.into_view()
         }}
+
         <img
             alt=alt.clone()
             class=class

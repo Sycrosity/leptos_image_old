@@ -21,13 +21,13 @@ async fn main() {
     let conf = get_configuration(None).await.unwrap();
     let leptos_options = conf.leptos_options;
     let addr = leptos_options.site_addr;
-    let routes = generate_route_list(|| view! {  <App/> });
+    let routes = generate_route_list(|| view! { <App/> });
 
     let conf = get_configuration(None).await.unwrap();
     let leptos_options = conf.leptos_options;
     let root = leptos_options.site_root.clone();
 
-    cache_app_images(root, || view! { <App/>}, 2, || (), || ())
+    cache_app_images(root, || view! { <App/> }, 2, || (), || ())
         .await
         .expect("Failed to cache images");
 
@@ -35,9 +35,7 @@ async fn main() {
     let app = Router::new()
         .route("/api/*fn_name", post(leptos_axum::handle_server_fns))
         .leptos_routes(&leptos_options, routes, || {
-            view! {
-                   <App/>
-            }
+            view! { <App/> }
         })
         // Add route for image cache.
         .route("/cache/image", get(image_cache_handler))
